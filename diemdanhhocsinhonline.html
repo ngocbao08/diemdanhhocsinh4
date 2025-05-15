@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Điểm Danh Học Sinh Theo Lớp</title>
+    <style>
+        body {
+            font-family: Arial;
+            margin: 20px;
+            background-color: #f4f4f4;
+        }
+        
+        h1,
+        h2 {
+            text-align: center;
+            color: #2e86de;
+        }
+        
+        select,
+        input[type="date"],
+        button {
+            padding: 10px;
+            margin: 10px;
+            font-size: 16px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #fff;
+            margin-top: 20px;
+        }
+        
+        th,
+        td {
+            border: 1px solid #ccc;
+            padding: 8px;
+            text-align: center;
+        }
+        
+        th {
+            background-color: #e3f2fd;
+        }
+        
+        #thongbao {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #d4edda;
+            border: 1px solid #28a745;
+            color: #155724;
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>Hệ Thống Điểm Danh Học Sinh</h1>
+
+    <div style="text-align: center;">
+        <label for="ngayDiemDanh">Ngày điểm danh:</label>
+        <input type="date" id="ngayDiemDanh" value="">
+        <br>
+        <label for="lopSelect">Chọn lớp:</label>
+        <select id="lopSelect" onchange="hienThiLop()"></select>
+        <br>
+        <button onclick="luuDiemDanh()">Lưu điểm danh</button>
+        <button onclick="guiThongBao()">Gửi thông báo</button>
+    </div>
+
+    <div id="danhSachHocSinh"></div>
+    <div id="thongbao">📢 Thông báo đã được gửi đến lớp!</div>
+
+    <script>
+        const danhSachLop = [];
+
+        // Tự động set ngày hôm nay cho input date
+        document.addEventListener('DOMContentLoaded', () => {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('ngayDiemDanh').value = today;
+        });
+
+        function sinhDuLieu() {
+            const khoiList = [10, 11, 12];
+            khoiList.forEach(khoi => {
+                for (let i = 1; i <= 5; i++) {
+                    const tenLop = `${khoi}A${i}`;
+                    const hocSinh = [];
+                    for (let j = 1; j <= 40; j++) {
+                        hocSinh.push({
+                            id: `${tenLop}-${j}`,
+                            hoTen: `HS ${j} Lớp ${tenLop}`,
+                            ngaySinh: `200${Math.floor(Math.random() * 4 + 2)}-0${Math.floor(Math.random() * 9 + 1)}-${Math.floor(Math.random() * 28 + 1)}`,
+                            gioiTinh: j % 2 === 0 ? 'Nam' : 'Nữ',
+                            lop: tenLop,
+                            khoi: khoi,
+                            diemDanh: 'Có mặt'
+                        });
+                    }
+                    danhSachLop.push({
+                        tenLop,
+                        hocSinh
+                    });
+                }
+            });
+
+            // Đưa tên lớp vào dropdown
+            const select = document.getElementById('lopSelect');
+            danhSachLop.forEach(lop => {
+                const option = document.createElement('option');
+                option.value = lop.tenLop;
+                option.textContent = lop.tenLop;
+                select.appendChild(option);
+            });
+
+            hienThiLop(); // Hiển thị lớp đầu tiên
+        }
+
+        function hienThiLop() {
+            const lopChon = document.getElementById('lopSelect').value;
+            const lop = danhSachLop.find(l => l.tenLop === lopChon);
+            const container = document.getElementById('danhSachHocSinh');
+
+            let html = `<h2>Lớp ${lop.tenLop} - Khối ${lop.hocSinh[0].khoi}</h2>`;
+            html += `<table>
+      <thead>
+        <tr>
+          <th>STT</th>
+          <th>Họ tên</th>
+          <th>Ngày sinh</th>
+          <th>Giới tính</th>
+          <th>Điểm danh</th>
+        </tr>
+      </thead>
+      <tbody>`;
+
+            lop.hocSinh.forEach((hs, index) => {
+                html += `
+        <tr>
+          <td>${index + 1}</td>
+          <td>${hs.hoTen}</td>
+          <td>${hs.ngaySinh}</td>
+          <td>${hs.gioiTinh}</td>
+          <td>
+            <label><input type="radio" name="dd_${hs.id}" value="Có mặt" checked> Có mặt</label>
+            <label><input type="radio" name="dd_${hs.id}" value="Vắng"> Vắng</label>
+          </td>
+        </tr>`;
+            });
+
+            html += `</tbody></table>`;
+            container.innerHTML = html;
+            document.getElementById('thongbao').style.display = 'none';
+        }
+
+        function luuDiemDanh() {
+            const lopChon = document.getElementById('lopSelect').value;
+            const lop = danhSachLop.find(l => l.tenLop === lopChon);
+
+            lop.hocSinh.forEach(hs => {
+                const radios = document.getElementsByName(`dd_${hs.id}`);
+                for (const radio of radios) {
+                    if (radio.checked) {
+                        hs.diemDanh = radio.value;
+                        break;
+                    }
+                }
+            });
+
+            alert(`✅ Điểm danh lớp ${lop.tenLop} đã được lưu!`);
+        }
+
+        function guiThongBao() {
+            const ngay = document.getElementById('ngayDiemDanh').value;
+            const lopChon = document.getElementById('lopSelect').value;
+            const lop = danhSachLop.find(l => l.tenLop === lopChon);
+            const vang = lop.hocSinh.filter(hs => hs.diemDanh === "Vắng");
+
+            let noiDung = `Thông báo lớp ${lop.tenLop} - Ngày ${ngay}: Có ${vang.length} học sinh vắng mặt.`;
+            console.log(noiDung); // Mô phỏng gửi thông báo
+
+            const tb = document.getElementById('thongbao');
+            tb.innerText = "📢 " + noiDung;
+            tb.style.display = 'block';
+        }
+
+        sinhDuLieu();
+    </script>
+
+</body>
+
+</html>
