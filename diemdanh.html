@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Điểm danh online</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f2f5;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        
+        th,
+        td {
+            padding: 10px;
+            border: 1px solid #ddd;
+            text-align: center;
+        }
+        
+        th {
+            background-color: #007bff;
+            color: #fff;
+        }
+        
+        input,
+        select,
+        button {
+            padding: 8px;
+            margin: 5px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+        
+        button {
+            background-color: #007bff;
+            color: white;
+            cursor: pointer;
+        }
+        
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h2>Điểm danh học sinh</h2>
+
+        <label for="attendanceDate">Ngày điểm danh:</label>
+        <input type="date" id="attendanceDate">
+
+        <label for="block">Khối:</label>
+        <select id="block" onchange="loadClasses()">
+    <option value="">--Chọn khối--</option>
+    <option value="10">10</option>
+    <option value="11">11</option>
+    <option value="12">12</option>
+  </select>
+
+        <label for="class">Lớp:</label>
+        <select id="class" onchange="loadStudents()">
+    <option value="">--Chọn lớp--</option>
+  </select>
+
+        <button onclick="addStudent()">Thêm học sinh</button>
+        <button onclick="saveData()">Lưu</button>
+
+        <table id="studentTable" style="display:none;">
+            <thead>
+                <tr>
+                    <th>STT</th>
+                    <th>Tên học sinh</th>
+                    <th>Ngày sinh</th>
+                    <th>Giới tính</th>
+                    <th>Có mặt</th>
+                    <th>Vắng</th>
+                    <th>Xóa</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+
+    <script>
+        const dataKey = 'diemdanh_data';
+        let currentClass = '';
+        let currentBlock = '';
+
+        function saveData() {
+            localStorage.setItem(dataKey, JSON.stringify(studentData));
+            alert("Đã lưu thông tin.");
+        }
+
+        function loadClasses() {
+            const block = document.getElementById('block').value;
+            currentBlock = block;
+            const classSelect = document.getElementById('class');
+            classSelect.innerHTML = '<option value="">--Chọn lớp--</option>';
+            if (!block) return;
+            for (let i = 1; i <= 5; i++) {
+                const option = document.createElement('option');
+                option.value = `${block}A${i}`;
+                option.textContent = `${block}A${i}`;
+                classSelect.appendChild(option);
+            }
+        }
+
+        let studentData = JSON.parse(localStorage.getItem(dataKey)) || {};
+
+        function loadStudents() {
+            const selectedClass = document.getElementById('class').value;
+            currentClass = selectedClass;
+            const table = document.getElementById('studentTable');
+            const tbody = table.querySelector('tbody');
+            tbody.innerHTML = '';
+            table.style.display = 'none';
+            if (!selectedClass) return;
+
+            if (!studentData[selectedClass]) studentData[selectedClass] = [];
+
+            studentData[selectedClass].forEach((student, index) => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+      <td>${index + 1}</td>
+      <td><input value="${student.name}" onchange="updateStudent(${index}, 'name', this.value)"></td>
+      <td><input type="date" value="${student.dob}" onchange="updateStudent(${index}, 'dob', this.value)"></td>
+      <td>
+        <select onchange="updateStudent(${index}, 'gender', this.value)">
+          <option ${student.gender === 'Nam' ? 'selected' : ''}>Nam</option>
+          <option ${student.gender === 'Nữ' ? 'selected' : ''}>Nữ</option>
+        </select>
+      </td>
+      <td><input type="radio" name="attend_${index}" ${student.present ? 'checked' : ''} onclick="markAttendance(${index}, true)"></td>
+      <td><input type="radio" name="attend_${index}" ${!student.present ? 'checked' : ''} onclick="markAttendance(${index}, false)"></td>
+      <td><button onclick="deleteStudent(${index})">Xóa</button></td>
+    `;
+                tbody.appendChild(row);
+            });
+            table.style.display = 'table';
+        }
+
+        function updateStudent(index, field, value) {
+            studentData[currentClass][index][field] = value;
+        }
+
+        function markAttendance(index, isPresent) {
+            studentData[currentClass][index].present = isPresent;
+        }
+
+        function addStudent() {
+            if (!currentClass) {
+                alert("Hãy chọn lớp trước.");
+                return;
+            }
+            studentData[currentClass].push({
+                name: '',
+                dob: '',
+                gender: 'Nam',
+                present: true
+            });
+            loadStudents();
+        }
+
+        function deleteStudent(index) {
+            if (confirm("Bạn có chắc chắn muốn xoá học sinh này?")) {
+                studentData[currentClass].splice(index, 1);
+                loadStudents();
+            }
+        }
+    </script>
+</body>
+
+</html>
