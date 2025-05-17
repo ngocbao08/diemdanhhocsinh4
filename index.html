@@ -8,7 +8,7 @@
   <style>
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: linear-gradient(135deg, #6b8de3, #b0d1ff);
+      background: linear-gradient(135deg, #6b8de3, #b0d1fff);
       margin: 0;
       padding: 30px 20px;
       min-height: 100vh;
@@ -211,6 +211,9 @@
 
       <button onclick="addStudent()">Thêm học sinh</button>
       <button onclick="saveData()">Lưu</button>
+
+      <input type="file" id="fileInput" accept=".xlsx,.xls" style="margin-left: 20px;" />
+      <button onclick="importExcel()">Import Excel</button>
     </div>
 
     <table id="studentTable" style="display:none;">
@@ -229,10 +232,14 @@
     </table>
   </div>
 
+  <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
   <script>
     const dataKey = 'diemdanh_data';
     let currentClass = '';
     let currentBlock = '';
+
+    // Dữ liệu học sinh lưu theo lớp
+    let studentData = JSON.parse(localStorage.getItem(dataKey)) || {};
 
     function saveData() {
       localStorage.setItem(dataKey, JSON.stringify(studentData));
@@ -251,9 +258,9 @@
         option.textContent = `${block}A${i}`;
         classSelect.appendChild(option);
       }
+      // Sau khi load lớp mới, reset danh sách học sinh
+      loadStudents();
     }
-
-    let studentData = JSON.parse(localStorage.getItem(dataKey)) || {};
 
     function loadStudents() {
       const selectedClass = document.getElementById('class').value;
@@ -284,7 +291,7 @@
     `;
         tbody.appendChild(row);
       });
-      table.style.display = 'table';
+      table.style.display = studentData[selectedClass].length ? 'table' : 'none';
     }
 
     function updateStudent(index, field, value) {
@@ -315,8 +322,112 @@
         loadStudents();
       }
     }
+
+    // Hàm chuẩn hóa ngày sinh từ Excel (serial hoặc chuỗi) sang yyyy-mm-dd chuẩn input date
+    function formatExcelDate(excelDate) {
+      if (!excelDate) return '';
+
+      // Nếu là chuỗi
+      if (typeof excelDate === 'string') {
+        if (/^\d{4}-\d{1,2}-\d{1,2}$/.test(excelDate)) {
+          return excelDate;
+        }
+        const parts = excelDate.split(/[\/\-\.]/);
+        if (parts.length === 3) {
+          let day = parseInt(parts[0], 10);
+          let month = parseInt(parts[1], 10);
+          let year = parseInt(parts[2], 10);
+          // Nếu năm nhỏ, có thể là mm/dd/yyyy => đổi chỗ
+          if (year < 1000) {
+            year = parseInt(parts[2], 10);
+            month = parseInt(parts[0], 10);
+            day = parseInt(parts[1], 10);
+          }
+          if (!year || !month || !day) return '';
+          month = month < 10 ? '0' + month : month;
+          day = day < 10 ? '0' + day : day;
+          return `${year}-${month}-${day}`;
+        }
+        return '';
+      }
+
+      // Nếu là số serial Excel
+      if (typeof excelDate === 'number') {
+        const date = new Date(Math.round((excelDate - 25569) * 86400 * 1000));
+        if (isNaN(date)) return '';
+        const yyyy = date.getFullYear();
+        let mm = date.getMonth() + 1;
+        let dd = date.getDate();
+        mm = mm < 10 ? '0' + mm : mm;
+        dd = dd < 10 ? '0' + dd : dd;
+        return `${yyyy}-${mm}-${dd}`;
+      }
+
+      return '';
+    }
+
+    // Hàm import Excel, đọc file rồi chuyển dữ liệu vào studentData cho lớp hiện tại
+    function importExcel() {
+      if (!currentClass) {
+        alert("Hãy chọn lớp trước khi import Excel.");
+        return;
+      }
+      const fileInput = document.getElementById('fileInput');
+      if (!fileInput.files.length) {
+        alert("Hãy chọn file Excel để import.");
+        return;
+      }
+      const file = fileInput.files[0];
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const data = new Uint8Array(e.target.result);
+        const workbook = XLSX.read(data, { type: 'array' });
+        const firstSheetName = workbook.SheetNames[0];
+        const worksheet = workbook.Sheets[firstSheetName];
+
+        // Đọc dữ liệu dạng JSON (mỗi row là object)
+        const jsonData = XLSX.utils.sheet_to_json(worksheet, { defval: '' });
+
+        // jsonData kỳ vọng có cột "Tên", "Ngày sinh", "Giới tính"
+        if (!jsonData.length) {
+          alert("File Excel không có dữ liệu.");
+          return;
+        }
+
+        // Xóa dữ liệu cũ của lớp đang chọn
+        studentData[currentClass] = [];
+
+        jsonData.forEach(row => {
+          let name = row['Tên'] || row['Name'] || '';
+          let dobRaw = row['Ngày sinh'] || row['DOB'] || '';
+          let genderRaw = row['Giới tính'] || row['Gender'] || '';
+
+          let dob = formatExcelDate(dobRaw);
+
+          let gender = 'Nam';
+          if (typeof genderRaw === 'string') {
+            const g = genderRaw.trim().toLowerCase();
+            if (g === 'nữ' || g === 'nu' || g === 'female') gender = 'Nữ';
+          }
+
+          if (name) { // Chỉ thêm nếu có tên
+            studentData[currentClass].push({
+              name,
+              dob,
+              gender,
+              present: true
+            });
+          }
+        });
+
+        loadStudents();
+        alert("Đã import dữ liệu học sinh thành công.");
+        // Xóa file input sau import để có thể import tiếp nếu cần
+        fileInput.value = '';
+      };
+      reader.readAsArrayBuffer(file);
+    }
   </script>
 </body>
 
 </html>
-``
