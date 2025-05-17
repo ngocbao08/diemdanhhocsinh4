@@ -2,145 +2,275 @@
 <html lang="vi">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Điểm danh online</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f0f2f5;
-            padding: 20px;
-        }
-        
-        .container {
-            max-width: 1000px;
-            margin: auto;
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
-        
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-        
-        th,
-        td {
-            padding: 10px;
-            border: 1px solid #ddd;
-            text-align: center;
-        }
-        
-        th {
-            background-color: #007bff;
-            color: #fff;
-        }
-        
-        input,
-        select,
-        button {
-            padding: 8px;
-            margin: 5px;
-            border-radius: 5px;
-            border: 1px solid #ccc;
-        }
-        
-        button {
-            background-color: #007bff;
-            color: white;
-            cursor: pointer;
-        }
-        
-        button:hover {
-            background-color: #0056b3;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Điểm danh online</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #6b8de3, #b0d1ff);
+      margin: 0;
+      padding: 30px 20px;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+    }
+
+    .container {
+      background-color: #fff;
+      border-radius: 12px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+      width: 100%;
+      max-width: 960px;
+      padding: 30px 40px;
+    }
+
+    h2 {
+      text-align: center;
+      color: #2c3e50;
+      margin-bottom: 25px;
+      font-weight: 700;
+      letter-spacing: 1px;
+    }
+
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px 30px;
+      justify-content: center;
+      align-items: center;
+      margin-bottom: 25px;
+    }
+
+    label {
+      font-weight: 600;
+      color: #34495e;
+      min-width: 90px;
+    }
+
+    input[type="date"],
+    select {
+      border: 1.5px solid #bdc3c7;
+      border-radius: 6px;
+      padding: 8px 12px;
+      font-size: 1rem;
+      min-width: 140px;
+      transition: border-color 0.25s ease;
+    }
+
+    input[type="date"]:focus,
+    select:focus {
+      border-color: #2980b9;
+      outline: none;
+      box-shadow: 0 0 6px #2980b9aa;
+    }
+
+    button {
+      background-color: #2980b9;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 8px;
+      color: white;
+      font-weight: 700;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      box-shadow: 0 4px 8px #2980b933;
+    }
+
+    button:hover {
+      background-color: #1c5980;
+      box-shadow: 0 6px 12px #1c598099;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0 10px;
+      margin-top: 15px;
+    }
+
+    thead tr {
+      background-color: #2980b9;
+      color: white;
+      font-weight: 700;
+      font-size: 1rem;
+      border-radius: 10px;
+    }
+
+    thead th {
+      padding: 12px 15px;
+      text-align: center;
+      user-select: none;
+    }
+
+    tbody tr {
+      background-color: #f9f9f9;
+      box-shadow: 0 1px 4px #ccc;
+      transition: background-color 0.3s ease;
+      border-radius: 8px;
+    }
+
+    tbody tr:hover {
+      background-color: #e1efff;
+    }
+
+    tbody td {
+      padding: 10px 12px;
+      text-align: center;
+      vertical-align: middle;
+    }
+
+    tbody input[type="text"],
+    tbody input[type="date"],
+    tbody select {
+      width: 100%;
+      padding: 6px 8px;
+      font-size: 0.9rem;
+      border: 1.3px solid #bdc3c7;
+      border-radius: 5px;
+      box-sizing: border-box;
+      transition: border-color 0.25s ease;
+    }
+
+    tbody input[type="text"]:focus,
+    tbody input[type="date"]:focus,
+    tbody select:focus {
+      border-color: #2980b9;
+      outline: none;
+      box-shadow: 0 0 6px #2980b9aa;
+    }
+
+    tbody input[type="radio"] {
+      width: 18px;
+      height: 18px;
+      cursor: pointer;
+    }
+
+    tbody button {
+      background-color: #e74c3c;
+      padding: 6px 14px;
+      font-size: 0.85rem;
+      border-radius: 6px;
+      box-shadow: none;
+      transition: background-color 0.3s ease;
+    }
+
+    tbody button:hover {
+      background-color: #b93023;
+    }
+
+    @media (max-width: 720px) {
+      .controls {
+        flex-direction: column;
+        gap: 10px 0;
+      }
+
+      label {
+        min-width: auto;
+        width: 100%;
+      }
+
+      input[type="date"],
+      select {
+        min-width: 100%;
+      }
+
+      button {
+        width: 100%;
+      }
+
+      table {
+        font-size: 0.9rem;
+      }
+    }
+  </style>
 </head>
 
 <body>
-    <div class="container">
-        <h2>Điểm danh học sinh</h2>
+  <div class="container">
+    <h2>Điểm danh học sinh</h2>
 
-        <label for="attendanceDate">Ngày điểm danh:</label>
-        <input type="date" id="attendanceDate">
+    <div class="controls">
+      <label for="attendanceDate">Ngày điểm danh:</label>
+      <input type="date" id="attendanceDate" />
 
-        <label for="block">Khối:</label>
-        <select id="block" onchange="loadClasses()">
-    <option value="">--Chọn khối--</option>
-    <option value="10">10</option>
-    <option value="11">11</option>
-    <option value="12">12</option>
-  </select>
+      <label for="block">Khối:</label>
+      <select id="block" onchange="loadClasses()">
+        <option value="">--Chọn khối--</option>
+        <option value="10">10</option>
+        <option value="11">11</option>
+        <option value="12">12</option>
+      </select>
 
-        <label for="class">Lớp:</label>
-        <select id="class" onchange="loadStudents()">
-    <option value="">--Chọn lớp--</option>
-  </select>
+      <label for="class">Lớp:</label>
+      <select id="class" onchange="loadStudents()">
+        <option value="">--Chọn lớp--</option>
+      </select>
 
-        <button onclick="addStudent()">Thêm học sinh</button>
-        <button onclick="saveData()">Lưu</button>
-
-        <table id="studentTable" style="display:none;">
-            <thead>
-                <tr>
-                    <th>STT</th>
-                    <th>Tên học sinh</th>
-                    <th>Ngày sinh</th>
-                    <th>Giới tính</th>
-                    <th>Có mặt</th>
-                    <th>Vắng</th>
-                    <th>Xóa</th>
-                </tr>
-            </thead>
-            <tbody></tbody>
-        </table>
+      <button onclick="addStudent()">Thêm học sinh</button>
+      <button onclick="saveData()">Lưu</button>
     </div>
 
-    <script>
-        const dataKey = 'diemdanh_data';
-        let currentClass = '';
-        let currentBlock = '';
+    <table id="studentTable" style="display:none;">
+      <thead>
+        <tr>
+          <th>STT</th>
+          <th>Tên học sinh</th>
+          <th>Ngày sinh</th>
+          <th>Giới tính</th>
+          <th>Có mặt</th>
+          <th>Vắng</th>
+          <th>Xóa</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
 
-        function saveData() {
-            localStorage.setItem(dataKey, JSON.stringify(studentData));
-            alert("Đã lưu thông tin.");
-        }
+  <script>
+    const dataKey = 'diemdanh_data';
+    let currentClass = '';
+    let currentBlock = '';
 
-        function loadClasses() {
-            const block = document.getElementById('block').value;
-            currentBlock = block;
-            const classSelect = document.getElementById('class');
-            classSelect.innerHTML = '<option value="">--Chọn lớp--</option>';
-            if (!block) return;
-            for (let i = 1; i <= 5; i++) {
-                const option = document.createElement('option');
-                option.value = `${block}A${i}`;
-                option.textContent = `${block}A${i}`;
-                classSelect.appendChild(option);
-            }
-        }
+    function saveData() {
+      localStorage.setItem(dataKey, JSON.stringify(studentData));
+      alert("Đã lưu thông tin.");
+    }
 
-        let studentData = JSON.parse(localStorage.getItem(dataKey)) || {};
+    function loadClasses() {
+      const block = document.getElementById('block').value;
+      currentBlock = block;
+      const classSelect = document.getElementById('class');
+      classSelect.innerHTML = '<option value="">--Chọn lớp--</option>';
+      if (!block) return;
+      for (let i = 1; i <= 5; i++) {
+        const option = document.createElement('option');
+        option.value = `${block}A${i}`;
+        option.textContent = `${block}A${i}`;
+        classSelect.appendChild(option);
+      }
+    }
 
-        function loadStudents() {
-            const selectedClass = document.getElementById('class').value;
-            currentClass = selectedClass;
-            const table = document.getElementById('studentTable');
-            const tbody = table.querySelector('tbody');
-            tbody.innerHTML = '';
-            table.style.display = 'none';
-            if (!selectedClass) return;
+    let studentData = JSON.parse(localStorage.getItem(dataKey)) || {};
 
-            if (!studentData[selectedClass]) studentData[selectedClass] = [];
+    function loadStudents() {
+      const selectedClass = document.getElementById('class').value;
+      currentClass = selectedClass;
+      const table = document.getElementById('studentTable');
+      const tbody = table.querySelector('tbody');
+      tbody.innerHTML = '';
+      table.style.display = 'none';
+      if (!selectedClass) return;
 
-            studentData[selectedClass].forEach((student, index) => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
+      if (!studentData[selectedClass]) studentData[selectedClass] = [];
+
+      studentData[selectedClass].forEach((student, index) => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
       <td>${index + 1}</td>
-      <td><input value="${student.name}" onchange="updateStudent(${index}, 'name', this.value)"></td>
+      <td><input value="${student.name}" onchange="updateStudent(${index}, 'name', this.value)" placeholder="Nhập tên học sinh"></td>
       <td><input type="date" value="${student.dob}" onchange="updateStudent(${index}, 'dob', this.value)"></td>
       <td>
         <select onchange="updateStudent(${index}, 'gender', this.value)">
@@ -150,42 +280,43 @@
       </td>
       <td><input type="radio" name="attend_${index}" ${student.present ? 'checked' : ''} onclick="markAttendance(${index}, true)"></td>
       <td><input type="radio" name="attend_${index}" ${!student.present ? 'checked' : ''} onclick="markAttendance(${index}, false)"></td>
-      <td><button onclick="deleteStudent(${index})">Xóa</button></td>
+      <td><button onclick="deleteStudent(${index})" title="Xóa học sinh">Xóa</button></td>
     `;
-                tbody.appendChild(row);
-            });
-            table.style.display = 'table';
-        }
+        tbody.appendChild(row);
+      });
+      table.style.display = 'table';
+    }
 
-        function updateStudent(index, field, value) {
-            studentData[currentClass][index][field] = value;
-        }
+    function updateStudent(index, field, value) {
+      studentData[currentClass][index][field] = value;
+    }
 
-        function markAttendance(index, isPresent) {
-            studentData[currentClass][index].present = isPresent;
-        }
+    function markAttendance(index, isPresent) {
+      studentData[currentClass][index].present = isPresent;
+    }
 
-        function addStudent() {
-            if (!currentClass) {
-                alert("Hãy chọn lớp trước.");
-                return;
-            }
-            studentData[currentClass].push({
-                name: '',
-                dob: '',
-                gender: 'Nam',
-                present: true
-            });
-            loadStudents();
-        }
+    function addStudent() {
+      if (!currentClass) {
+        alert("Hãy chọn lớp trước.");
+        return;
+      }
+      studentData[currentClass].push({
+        name: '',
+        dob: '',
+        gender: 'Nam',
+        present: true
+      });
+      loadStudents();
+    }
 
-        function deleteStudent(index) {
-            if (confirm("Bạn có chắc chắn muốn xoá học sinh này?")) {
-                studentData[currentClass].splice(index, 1);
-                loadStudents();
-            }
-        }
-    </script>
+    function deleteStudent(index) {
+      if (confirm("Bạn có chắc chắn muốn xoá học sinh này?")) {
+        studentData[currentClass].splice(index, 1);
+        loadStudents();
+      }
+    }
+  </script>
 </body>
 
 </html>
+``
